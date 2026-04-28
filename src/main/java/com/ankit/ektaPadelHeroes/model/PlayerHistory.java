@@ -7,19 +7,23 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
+
+import java.time.LocalDateTime;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class Player {
+public class PlayerHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-    @NonNull
     private String name;
-    @NonNull
-    private String displayName;
-    private String displayImage;
+    private int matchesPlayed;
+    private double gamesWon;
+    private double gamesLost;
+    private double winRate;
+    private double skillRating;
+    private LocalDateTime createdOn;
+    private LocalDateTime lastUpdatedOn;
 }
