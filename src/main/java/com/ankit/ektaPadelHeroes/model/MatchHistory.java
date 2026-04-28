@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Data
 public class MatchHistory {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @NonNull
     private String player1;
