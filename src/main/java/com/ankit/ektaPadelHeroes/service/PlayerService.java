@@ -18,4 +18,6 @@ public interface PlayerService {
     Player updatePlayer(long id, Player playerDetails);
 
     boolean deletePlayer(long id);
+
+    List<Player> getPlayerByNameOrDisplayName(String name);
 }
