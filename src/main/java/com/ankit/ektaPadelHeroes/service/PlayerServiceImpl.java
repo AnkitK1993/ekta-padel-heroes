@@ -57,5 +57,10 @@ public class PlayerServiceImpl implements PlayerService {
         }
         return false;
     }
+
+    @Override
+    public List<Player> addMultiplePlayers(List<Player> players) {
+        return playerRepository.saveAll(players);
+    }
 }
 

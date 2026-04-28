@@ -19,14 +19,21 @@ public class PlayerController {
     private PlayerService playerService;
 
     // CREATE - POST
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<Player> createPlayer(@Valid @RequestBody Player player) {
         Player savedPlayer = playerService.createPlayer(player);
         return new ResponseEntity<>(savedPlayer, HttpStatus.CREATED);
     }
 
+    // CREATE BULK - POST
+    @PostMapping("/bulk-add")
+    public ResponseEntity<List<Player>> createBulkPlayers(@Valid @RequestBody List<Player> players) {
+        List<Player> savedPlayers = playerService.addMultiplePlayers(players);
+        return new ResponseEntity<>(savedPlayers, HttpStatus.CREATED);
+    }
+
     // READ - GET all
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<Player>> getAllPlayers() {
         List<Player> players = playerService.getAllPlayers();
         return new ResponseEntity<>(players, HttpStatus.OK);
