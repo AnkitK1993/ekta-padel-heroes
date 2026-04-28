@@ -62,5 +62,9 @@ public class PlayerServiceImpl implements PlayerService {
     public List<Player> addMultiplePlayers(List<Player> players) {
         return playerRepository.saveAll(players);
     }
-}
 
+    @Override
+    public List<Player> getPlayerByNameOrDisplayName(String name) {
+        return playerRepository.getPlayerByNameOrDisplayName(name);
+    }
+}

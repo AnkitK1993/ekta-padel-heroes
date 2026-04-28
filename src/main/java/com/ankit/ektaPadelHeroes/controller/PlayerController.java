@@ -47,6 +47,16 @@ public class PlayerController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    // READ - GET by Name or DisplayName
+    @GetMapping("/search")
+    public ResponseEntity<List<Player>> getPlayerByNameOrDisplayName(@RequestParam String name) {
+        List<Player> players = playerService.getPlayerByNameOrDisplayName(name);
+        if (players.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(players, HttpStatus.OK);
+    }
+
     // UPDATE - PUT
     @PutMapping("/{id}")
     public ResponseEntity<Player> updatePlayer(@PathVariable long id, @Valid @RequestBody Player playerDetails) {
