@@ -1,3 +1,25 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /ekta-padel-heroes
 spring:
   application:
-    name: ektaPadelHeroes
+    name: ekta-padel-heroes
+
+  # Configuration for MySQL Database
+
+  jpa:
+    #    database-platform: org.hibernate.dialect.MySQL5Dialect
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        ddl-auto: update
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/ektapadelheroes?useSSL=false
+    username: ankit
+    password: ankit@1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    initialization-mode: always

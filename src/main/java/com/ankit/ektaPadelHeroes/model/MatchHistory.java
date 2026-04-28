@@ -9,17 +9,28 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+import java.time.LocalDateTime;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class Player {
+public class MatchHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     @NonNull
-    private String name;
+    private String player1;
     @NonNull
-    private String displayName;
-    private String displayImage;
+    private String player2;
+    @NonNull
+    private String player3;
+    @NonNull
+    private String player4;
+    @NonNull
+    private int gamesWon;
+    @NonNull
+    private int gamesLost;
+    private LocalDateTime datePlayed;
+    private boolean isWinnerTeam1;
 }
