@@ -1,17 +1,13 @@
 package com.ankit.ektaPadelHeroes.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class PlayerHistory {
@@ -20,10 +16,19 @@ public class PlayerHistory {
     private long id;
     private String name;
     private int matchesPlayed;
+    private int matchesWon;
+    @Column(name = "win_rate", precision = 5, scale = 2)
+    private BigDecimal winRate;
     private double gamesWon;
     private double gamesLost;
-    private double winRate;
-    private double skillRating;
+    @Column(name = "skill_rating", precision = 5, scale = 2)
+    private BigDecimal skillRating;
     private LocalDateTime createdOn;
     private LocalDateTime lastUpdatedOn;
+
+    public PlayerHistory(String name, double gamesWon, double gamesLost) {
+        this.name = name;
+        this.gamesWon = gamesWon;
+        this.gamesLost = gamesLost;
+    }
 }
