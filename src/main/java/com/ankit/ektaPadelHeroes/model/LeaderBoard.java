@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Data
 public class LeaderBoard {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @ManyToOne
