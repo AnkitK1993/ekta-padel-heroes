@@ -9,6 +9,8 @@ public interface PlayerService {
 
     Player createPlayer(Player player);
 
+    List<Player> addMultiplePlayers(List<Player> players);
+
     List<Player> getAllPlayers();
 
     Optional<Player> getPlayerById(long id);
@@ -17,4 +19,3 @@ public interface PlayerService {
 
     boolean deletePlayer(long id);
 }
-
