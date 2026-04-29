@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @NoArgsConstructor
@@ -23,8 +23,8 @@ public class PlayerHistory {
     private double gamesLost;
     @Column(name = "skill_rating", precision = 5, scale = 2)
     private BigDecimal skillRating;
-    private LocalDateTime createdOn;
-    private LocalDateTime lastUpdatedOn;
+    private LocalDate createdOn;
+    private LocalDate lastUpdatedOn;
 
     public PlayerHistory(String name, double gamesWon, double gamesLost) {
         this.name = name;
