@@ -52,7 +52,16 @@ public class MatchHistoryServiceImpl implements MatchHistoryService {
     }
 
     private void handlePlayerHistory(MatchHistory match, Player player, boolean won) {
-        PlayerHistory playerHistory = new PlayerHistory(player.getName(), match.getGamesWon(), match.getGamesLost());
+        int gamesWon = 0;
+        int gamesLost = 0;
+        if(won){
+            gamesWon = Math.max(match.getGamesWon(), match.getGamesLost());
+            gamesLost = Math.min(match.getGamesLost(), match.getGamesWon());
+        }else{
+            gamesWon = Math.min(match.getGamesWon(), match.getGamesLost());
+            gamesLost = Math.max(match.getGamesLost(), match.getGamesWon());
+        }
+        PlayerHistory playerHistory = new PlayerHistory(player.getName(), gamesWon, gamesLost);
         playerHistoryService.updateOrCreatePlayerHistory(player,playerHistory, won);
     }
 

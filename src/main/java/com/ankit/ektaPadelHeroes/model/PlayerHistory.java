@@ -15,8 +15,8 @@ public class PlayerHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
-    private int matchesPlayed;
-    private int matchesWon;
+    private double matchesPlayed;
+    private double matchesWon;
     @Column(name = "win_rate", precision = 5, scale = 2)
     private BigDecimal winRate;
     private double gamesWon;
