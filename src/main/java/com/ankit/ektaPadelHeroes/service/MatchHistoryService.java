@@ -1,5 +1,6 @@
 package com.ankit.ektaPadelHeroes.service;
 
+import com.ankit.ektaPadelHeroes.dto.LeaderboardDTO;
 import com.ankit.ektaPadelHeroes.model.MatchHistory;
 
 import java.util.List;
@@ -18,4 +19,8 @@ public interface MatchHistoryService {
     MatchHistory updateMatchHistory(long id, MatchHistory matchHistoryDetails);
 
     boolean deleteMatchHistory(long id);
+
+    boolean deleteAllMatchHistories();
+
+    List<LeaderboardDTO> getLeaderboardByPeriod(String period);
 }

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,7 +20,7 @@ public class PlayerHistoryServiceImpl implements PlayerHistoryService {
 
     @Override
     public PlayerHistory createPlayerHistory(PlayerHistory playerHistory) {
-        playerHistory.setLastUpdatedOn(LocalDateTime.now());
+        playerHistory.setLastUpdatedOn(LocalDate.now());
         return playerHistoryRepository.save(playerHistory);
     }
 
@@ -71,12 +71,12 @@ public class PlayerHistoryServiceImpl implements PlayerHistoryService {
             playerHistory.setMatchesWon(won ? 1 : 0);
             playerHistory.setGamesWon(pHistory.getGamesWon());
             playerHistory.setGamesLost(pHistory.getGamesLost());
-            playerHistory.setCreatedOn(LocalDateTime.now());
+            playerHistory.setCreatedOn(LocalDate.now());
         }
 
         // Calculate rating metrics with proper precision
         updatePlayerRatings(playerHistory);
-        playerHistory.setLastUpdatedOn(LocalDateTime.now());
+        playerHistory.setLastUpdatedOn(LocalDate.now());
         playerHistoryRepository.save(playerHistory);
     }
 

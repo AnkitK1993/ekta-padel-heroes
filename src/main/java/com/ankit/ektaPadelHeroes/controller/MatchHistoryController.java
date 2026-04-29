@@ -66,4 +66,16 @@ public class MatchHistoryController {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
+    // DELETE ALL
+    @DeleteMapping("/all")
+    public ResponseEntity<Void> deleteAllMatchHistories() {
+        boolean deleted = matchHistoryService.deleteAllMatchHistories();
+        if (deleted) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+
 }

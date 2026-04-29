@@ -1,30 +1,20 @@
-package com.ankit.ektaPadelHeroes.model;
+package com.ankit.ektaPadelHeroes.dto;
 
-import jakarta.persistence.*;
+import com.ankit.ektaPadelHeroes.model.Player;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
-@Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class Leaderboard {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
-    @ManyToOne
-    @JoinColumn(name = "player_id")
+public class LeaderboardDTO {
     private Player player;
     private double wins;
     private double losses;
     private int gamesWon;
     private int gamesLost;
     private int gamesDifference;
+    private double skillRating;
     private double winRate;
-    private LocalDateTime datePlayed;
-
 }
