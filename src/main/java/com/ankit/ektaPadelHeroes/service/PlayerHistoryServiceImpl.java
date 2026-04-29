@@ -62,8 +62,8 @@ public class PlayerHistoryServiceImpl implements PlayerHistoryService {
             playerHistory = existingPlayerOpt.get();
             playerHistory.setMatchesPlayed(playerHistory.getMatchesPlayed() + 1);
             playerHistory.setMatchesWon(playerHistory.getMatchesWon() + (won ? 1 : 0));
-            playerHistory.setGamesWon(playerHistory.getGamesWon() + pHistory.getGamesWon());
-            playerHistory.setGamesLost(playerHistory.getGamesLost() + pHistory.getGamesLost());
+            playerHistory.setGamesWon(playerHistory.getGamesWon() + (won ? pHistory.getGamesWon() : pHistory.getGamesLost()));
+            playerHistory.setGamesLost(playerHistory.getGamesLost() + (won ? pHistory.getGamesLost() : pHistory.getGamesWon()));
             playerHistory.setSkillRating(BigDecimal.valueOf((playerHistory.getGamesWon()/(playerHistory.getGamesWon() + playerHistory.getGamesLost()))*10));
         } else {
             // Create new player
