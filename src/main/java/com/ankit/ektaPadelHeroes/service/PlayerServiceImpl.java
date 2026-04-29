@@ -31,9 +31,7 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public Player updatePlayer(long id, Player playerDetails) {
-        Optional<Player> player = playerRepository.findById(id);
-        if (player.isPresent()) {
-            Player existingPlayer = player.get();
+        return playerRepository.findById(id).map(existingPlayer -> {
             if (playerDetails.getName() != null) {
                 existingPlayer.setName(playerDetails.getName());
             }
@@ -44,14 +42,12 @@ public class PlayerServiceImpl implements PlayerService {
                 existingPlayer.setDisplayImage(playerDetails.getDisplayImage());
             }
             return playerRepository.save(existingPlayer);
-        }
-        return null;
+        }).orElse(null);
     }
 
     @Override
     public boolean deletePlayer(long id) {
-        Optional<Player> player = playerRepository.findById(id);
-        if (player.isPresent()) {
+        if (playerRepository.existsById(id)) {
             playerRepository.deleteById(id);
             return true;
         }

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -40,8 +41,7 @@ public class PlayerHistoryServiceImpl implements PlayerHistoryService {
 
     @Override
     public boolean deletePlayerHistory(long id) {
-        Optional<PlayerHistory> playerHistory = playerHistoryRepository.findById(id);
-        if (playerHistory.isPresent()) {
+        if (playerHistoryRepository.existsById(id)) {
             playerHistoryRepository.deleteById(id);
             return true;
         }
@@ -50,23 +50,21 @@ public class PlayerHistoryServiceImpl implements PlayerHistoryService {
 
     @Override
     public void deleteAllPlayerHistory() {
-       playerHistoryRepository.deleteAll();
+        playerHistoryRepository.deleteAll();
     }
 
     @Override
-    public void updateOrCreatePlayerHistory(Player player,  PlayerHistory pHistory, boolean won) {
+    public void updateOrCreatePlayerHistory(Player player, PlayerHistory pHistory, boolean won) {
         Optional<PlayerHistory> existingPlayerOpt = playerHistoryRepository.findByName(player.getName());
         PlayerHistory playerHistory;
+
         if (existingPlayerOpt.isPresent()) {
-            // Update existing player
             playerHistory = existingPlayerOpt.get();
             playerHistory.setMatchesPlayed(playerHistory.getMatchesPlayed() + 1);
             playerHistory.setMatchesWon(playerHistory.getMatchesWon() + (won ? 1 : 0));
-            playerHistory.setGamesWon(playerHistory.getGamesWon() + (won ? pHistory.getGamesWon() : pHistory.getGamesLost()));
-            playerHistory.setGamesLost(playerHistory.getGamesLost() + (won ? pHistory.getGamesLost() : pHistory.getGamesWon()));
-            playerHistory.setSkillRating(BigDecimal.valueOf((playerHistory.getGamesWon()/(playerHistory.getGamesWon() + playerHistory.getGamesLost()))*10));
+            playerHistory.setGamesWon(playerHistory.getGamesWon() + pHistory.getGamesWon());
+            playerHistory.setGamesLost(playerHistory.getGamesLost() + pHistory.getGamesLost());
         } else {
-            // Create new player
             playerHistory = new PlayerHistory();
             playerHistory.setName(player.getName());
             playerHistory.setMatchesPlayed(1);
@@ -76,15 +74,30 @@ public class PlayerHistoryServiceImpl implements PlayerHistoryService {
             playerHistory.setCreatedOn(LocalDateTime.now());
         }
 
-        // Calculate win rate
-        if (playerHistory.getMatchesWon() > 0) {
-            BigDecimal winRate = BigDecimal.valueOf((playerHistory.getMatchesWon() / playerHistory.getMatchesPlayed()) * 100L);
-            playerHistory.setWinRate(winRate);
-        }
-
-        playerHistory.setSkillRating(BigDecimal.valueOf((playerHistory.getGamesWon()/(playerHistory.getGamesWon() + playerHistory.getGamesLost()))*10));
+        // Calculate rating metrics with proper precision
+        updatePlayerRatings(playerHistory);
         playerHistory.setLastUpdatedOn(LocalDateTime.now());
         playerHistoryRepository.save(playerHistory);
+    }
+
+    private void updatePlayerRatings(PlayerHistory playerHistory) {
+        double totalGames = playerHistory.getGamesWon() + playerHistory.getGamesLost();
+
+        if (totalGames > 0) {
+            // Win rate: (matches won / total matches) * 100
+            BigDecimal winRate = BigDecimal.valueOf(playerHistory.getMatchesWon())
+                    .divide(BigDecimal.valueOf(playerHistory.getMatchesPlayed()), 4, RoundingMode.HALF_UP)
+                    .multiply(BigDecimal.valueOf(100))
+                    .setScale(2, RoundingMode.HALF_UP);
+            playerHistory.setWinRate(winRate);
+
+            // Skill rating: (games won / total games) * 10
+            BigDecimal skillRating = BigDecimal.valueOf(playerHistory.getGamesWon())
+                    .divide(BigDecimal.valueOf(totalGames), 4, RoundingMode.HALF_UP)
+                    .multiply(BigDecimal.valueOf(10))
+                    .setScale(2, RoundingMode.HALF_UP);
+            playerHistory.setSkillRating(skillRating);
+        }
     }
 }
 

@@ -25,44 +25,58 @@ public class MatchHistoryServiceImpl implements MatchHistoryService {
     @Override
     public MatchHistory createMatchHistory(MatchHistory matchHistory) {
         MatchHistory match = matchHistoryRepository.save(matchHistory);
-        getPlayerAndUpdatePlayerHistory(match);
+        updatePlayerHistoriesForMatch(match);
         return match;
     }
 
     @Override
     public List<MatchHistory> addMultipleMatchRecords(List<MatchHistory> matchHistories) {
         List<MatchHistory> matches = matchHistoryRepository.saveAll(matchHistories);
-
-        for (MatchHistory match : matches)
-            getPlayerAndUpdatePlayerHistory(match);
-
+        matches.forEach(this::updatePlayerHistoriesForMatch);
         return matches;
     }
 
-    private void getPlayerAndUpdatePlayerHistory(MatchHistory match) {
-        Player player1 = playerService.getPlayerByNameOrDisplayName(match.getPlayer1()).getFirst();
-        Player player2 = playerService.getPlayerByNameOrDisplayName(match.getPlayer2()).getFirst();
-        Player player3 = playerService.getPlayerByNameOrDisplayName(match.getPlayer3()).getFirst();
-        Player player4 = playerService.getPlayerByNameOrDisplayName(match.getPlayer4()).getFirst();
+    private void updatePlayerHistoriesForMatch(MatchHistory match) {
+        try {
+            List<Player> p1Result = playerService.getPlayerByNameOrDisplayName(match.getPlayer1());
+            List<Player> p2Result = playerService.getPlayerByNameOrDisplayName(match.getPlayer2());
+            List<Player> p3Result = playerService.getPlayerByNameOrDisplayName(match.getPlayer3());
+            List<Player> p4Result = playerService.getPlayerByNameOrDisplayName(match.getPlayer4());
 
-        handlePlayerHistory(match, player1, match.isWinnerTeam1());
-        handlePlayerHistory(match, player2, match.isWinnerTeam1());
-        handlePlayerHistory(match, player3, !match.isWinnerTeam1());
-        handlePlayerHistory(match, player4, !match.isWinnerTeam1());
+            // Check if players were found
+            if (p1Result.isEmpty() || p2Result.isEmpty() || p3Result.isEmpty() || p4Result.isEmpty()) {
+                return; // Skip if any player not found
+            }
+
+            Player player1 = p1Result.get(0);
+            Player player2 = p2Result.get(0);
+            Player player3 = p3Result.get(0);
+            Player player4 = p4Result.get(0);
+
+            // Update player histories (Team 1 vs Team 2)
+            updatePlayerHistory(match, player1, match.isWinnerTeam1());
+            updatePlayerHistory(match, player2, match.isWinnerTeam1());
+            updatePlayerHistory(match, player3, !match.isWinnerTeam1());
+            updatePlayerHistory(match, player4, !match.isWinnerTeam1());
+        } catch (Exception e) {
+            // Log error but don't fail the match creation
+            System.err.println("Error updating player histories: " + e.getMessage());
+        }
     }
 
-    private void handlePlayerHistory(MatchHistory match, Player player, boolean won) {
-        int gamesWon = 0;
-        int gamesLost = 0;
-        if(won){
+    private void updatePlayerHistory(MatchHistory match, Player player, boolean won) {
+        int gamesWon, gamesLost;
+
+        if (won) {
             gamesWon = Math.max(match.getGamesWon(), match.getGamesLost());
             gamesLost = Math.min(match.getGamesLost(), match.getGamesWon());
-        }else{
+        } else {
             gamesWon = Math.min(match.getGamesWon(), match.getGamesLost());
             gamesLost = Math.max(match.getGamesLost(), match.getGamesWon());
         }
+
         PlayerHistory playerHistory = new PlayerHistory(player.getName(), gamesWon, gamesLost);
-        playerHistoryService.updateOrCreatePlayerHistory(player,playerHistory, won);
+        playerHistoryService.updateOrCreatePlayerHistory(player, playerHistory, won);
     }
 
     @Override
@@ -77,9 +91,7 @@ public class MatchHistoryServiceImpl implements MatchHistoryService {
 
     @Override
     public MatchHistory updateMatchHistory(long id, MatchHistory matchHistoryDetails) {
-        Optional<MatchHistory> matchHistory = matchHistoryRepository.findById(id);
-        if (matchHistory.isPresent()) {
-            MatchHistory existingMatchHistory = matchHistory.get();
+        return matchHistoryRepository.findById(id).map(existingMatchHistory -> {
             if (matchHistoryDetails.getPlayer1() != null) {
                 existingMatchHistory.setPlayer1(matchHistoryDetails.getPlayer1());
             }
@@ -94,20 +106,22 @@ public class MatchHistoryServiceImpl implements MatchHistoryService {
             }
             existingMatchHistory.setGamesWon(matchHistoryDetails.getGamesWon());
             existingMatchHistory.setGamesLost(matchHistoryDetails.getGamesLost());
-            existingMatchHistory.setDatePlayed(matchHistoryDetails.getDatePlayed());
+            if (matchHistoryDetails.getDatePlayed() != null) {
+                existingMatchHistory.setDatePlayed(matchHistoryDetails.getDatePlayed());
+            }
             existingMatchHistory.setWinnerTeam1(matchHistoryDetails.isWinnerTeam1());
             return matchHistoryRepository.save(existingMatchHistory);
-        }
-        return null;
+        }).orElse(null);
     }
 
     @Override
     public boolean deleteMatchHistory(long id) {
-        Optional<MatchHistory> matchHistory = matchHistoryRepository.findById(id);
-        if (matchHistory.isPresent()) {
+        if (matchHistoryRepository.existsById(id)) {
             matchHistoryRepository.deleteById(id);
             return true;
         }
         return false;
     }
 }
+
+
